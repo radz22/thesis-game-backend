@@ -2,7 +2,7 @@ import { CustomError } from "../utils/custom-error";
 import "dotenv/config";
 import SendEmail from "../lib/nodemailer";
 export const forgotPasswordService = async (token: string, email: string) => {
-  const resetLink = `http://localhost:5173/page/reset-password/${token}`;
+  const resetLink = `https://techtales-8k21.onrender.com/page/reset-password/${token}`;
 
   const mailOptions = {
     from: process.env.EMAIL,
