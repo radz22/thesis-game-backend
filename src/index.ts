@@ -13,12 +13,25 @@ import questionJsRoute from "./routes/question-js-route";
 import cookieRoute from "./routes/cookie-route";
 const app: Application = express();
 const PORT = 3000;
-app.use(
-  cors({
-    origin: "http://localhost:5173",
-    credentials: true,
-  })
-);
+
+const allowedOrigins = [
+  "https://techtales-8k21.onrender.com",
+  "http://localhost:5173",
+];
+const corsOptions = {
+  origin: function (
+    origin: string | undefined,
+    callback: (err: Error | null, allow?: boolean) => void
+  ) {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error("Not allowed by CORS"));
+    }
+  },
+  credentials: true,
+};
+app.use(cors(corsOptions));
 
 app.use(express.json());
 app.use(cookieParser());
