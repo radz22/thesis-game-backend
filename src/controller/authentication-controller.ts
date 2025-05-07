@@ -102,14 +102,14 @@ export const signin = async (
     res.cookie("auth_accessToken", accessToken, {
       httpOnly: true,
       secure: true,
-      sameSite: "strict",
+      sameSite: "none",
       maxAge: 60 * 60 * 1000,
     });
 
     res.cookie("auth_refreshToken", refreshToken, {
       httpOnly: true,
       secure: true,
-      sameSite: "strict",
+      sameSite: "none",
       maxAge: 24 * 60 * 60 * 1000,
     });
     res.status(200).json({

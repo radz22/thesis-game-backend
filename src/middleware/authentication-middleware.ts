@@ -82,14 +82,14 @@ export const authenticationMiddleware = async (
       res.cookie("auth_accessToken", newAccessToken, {
         httpOnly: true,
         secure: true,
-        sameSite: "strict",
+        sameSite: "none",
         maxAge: 5 * 60 * 1000,
       });
 
       res.cookie("auth_refreshToken", newRefreshToken, {
         httpOnly: true,
         secure: true,
-        sameSite: "strict",
+        sameSite: "none",
         maxAge: 24 * 60 * 60 * 1000,
       });
       // Attach session data
