@@ -290,7 +290,7 @@ export const updateProfile = async (
     const existingAccount = await accountModel.findOne({ username });
 
     if (existingUser && existingAccount) {
-      throw new CustomError("Username already exists", 400);
+      throw new CustomError("Username is already in use", 400);
     }
 
     await userModel.findOneAndUpdate(
