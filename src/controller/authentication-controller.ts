@@ -286,10 +286,11 @@ export const updateProfile = async (
     const { id } = req.params;
     const { username } = req.body;
 
-    const findUser = userModel.findOne({ username: username });
+    const existingUser = await userModel.findOne({ username });
+    const existingAccount = await accountModel.findOne({ username });
 
-    if (!findUser) {
-      throw new CustomError("Username already exists", 404);
+    if (existingUser && existingAccount) {
+      throw new CustomError("Username already exists", 400);
     }
 
     await userModel.findOneAndUpdate(
@@ -298,17 +299,14 @@ export const updateProfile = async (
       { new: true }
     );
 
-    await accountModel.findByIdAndUpdate(
-      { _id: id },
-      { username },
-      { new: true }
-    );
+    await accountModel.findByIdAndUpdate(id, { username }, { new: true });
 
     await leaderBoardModel.findOneAndUpdate(
       { user_id: id },
       { username },
       { new: true }
     );
+
     res.status(200).json({
       message: "Profile updated successfully",
       success: true,
