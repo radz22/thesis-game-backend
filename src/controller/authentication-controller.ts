@@ -238,8 +238,17 @@ export const resetPassword = async (
   }
 };
 export const logout = (req: Request, res: Response): void => {
-  res.clearCookie("auth_accessToken");
-  res.clearCookie("auth_refreshToken");
+  res.clearCookie("auth_accessToken", {
+    httpOnly: true,
+    secure: true,
+    sameSite: "none",
+  });
+
+  res.clearCookie("auth_refreshToken", {
+    httpOnly: true,
+    secure: true,
+    sameSite: "none",
+  });
   res.status(200).json({ message: "Logged out successfully" });
 };
 
