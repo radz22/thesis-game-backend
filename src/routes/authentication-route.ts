@@ -8,6 +8,7 @@ import {
   resetPassword,
   logout,
   verifyCreateAccount,
+  updateProfile,
 } from "../controller/authentication-controller";
 import { authenticationMiddleware } from "../middleware/authentication-middleware";
 const authenticationRouter = Router();
@@ -20,5 +21,6 @@ authenticationRouter.get("/verify/account/:token", verifyCreateAccount);
 authenticationRouter.post("/forgot-password", forgotPassword);
 authenticationRouter.post("/reset-password", resetPassword);
 authenticationRouter.post("/logout", logout);
+authenticationRouter.put("/update/profile/:id", updateProfile);
 
 export default authenticationRouter;

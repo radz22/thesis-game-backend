@@ -6,6 +6,8 @@ import { checkEmailExisting } from "../services/check-email-existing-";
 import { createSessionAndDeleteToken } from "../services/create-authentication";
 import jwt from "jsonwebtoken";
 import { userModel } from "../model/user-model";
+import { accountModel } from "../model/account-model";
+import { leaderBoardModel } from "../model/leader-board-model";
 import {
   generateResetToken,
   generateVerifyAccountCreateToken,
@@ -147,14 +149,25 @@ export const profile = async (
   res: Response,
   next: NextFunction
 ): Promise<void> => {
-  const session = req.session;
+  const accessToken = req.cookies.auth_accessToken;
+  const decodedAccessToken = jwt.verify(
+    accessToken,
+    process.env.JWT_ACCESS_SECRET as string
+  ) as { id: string; email: string; username: string };
 
+  if (!decodedAccessToken) {
+    throw new CustomError("No token provided", 401);
+  }
   try {
-    res.json({
-      message: "Profile fetched successfully",
-      user: session?.account_id,
-      email: session?.email,
-      username: session?.username,
+    const user = await userModel.findOne({
+      user_id: decodedAccessToken.id,
+    });
+
+    if (!user) {
+      throw new CustomError("User not found", 404);
+    }
+    res.status(200).json({
+      user,
     });
   } catch (error) {
     next(error);
@@ -257,6 +270,47 @@ export const verifyCreateAccount = async (
     res.status(200).json({
       message: Success_response,
       user: user,
+      success: true,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const updateProfile = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> => {
+  try {
+    const { id } = req.params;
+    const { username } = req.body;
+
+    const findUser = userModel.findOne({ username: username });
+
+    if (!findUser) {
+      throw new CustomError("Username already exists", 404);
+    }
+
+    await userModel.findOneAndUpdate(
+      { user_id: id },
+      { username },
+      { new: true }
+    );
+
+    await accountModel.findByIdAndUpdate(
+      { _id: id },
+      { username },
+      { new: true }
+    );
+
+    await leaderBoardModel.findOneAndUpdate(
+      { user_id: id },
+      { username },
+      { new: true }
+    );
+    res.status(200).json({
+      message: "Profile updated successfully",
       success: true,
     });
   } catch (error) {
